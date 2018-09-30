@@ -23,13 +23,13 @@ include Defines.mk
 default: $(DEFAULT_MAKE_TARGET)
 
 all: lib src scripts
-docs: README.html
+docs: README.html $(subst .md,.html,$(wildcard doc/*.md))
 reallyall: all docs test
 
 clean: ## Cleanup
 	git clean -dfx -e localconf
 
-.PHONY: lib src test
+.PHONY: lib src test docs
 
 lib: ## Build libs
 	$(MAKE) -C lib
@@ -47,9 +47,9 @@ scripts/%: scripts/%.in
 
 scripts: scripts/beesd scripts/beesd@.service
 
-README.html: README.md
-	$(MARKDOWN) README.md > README.html.new
-	mv -f README.html.new README.html
+%.html: %.md
+	$(MARKDOWN) $< > $@.new
+	mv -f $@.new $@
 
 install_libs: lib
 	install -Dm644 lib/libcrucible.so $(DESTDIR)$(LIB_PREFIX)/libcrucible.so
